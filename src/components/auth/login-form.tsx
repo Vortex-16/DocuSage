@@ -40,8 +40,8 @@ export function LoginForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <div className="w-full max-w-md">
+      <CardHeader className="text-center">
         <CardTitle className="text-2xl">Welcome back</CardTitle>
         <CardDescription>
           Enter your email below to log in to your account.
@@ -88,6 +88,6 @@ export function LoginForm() {
           </Link>
         </div>
       </CardContent>
-    </Card>
+    </div>
   );
 }

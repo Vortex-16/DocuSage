@@ -8,7 +8,7 @@ export default function AuthLayout({
 }) {
   return (
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
-      <div className="flex items-center justify-center p-4 sm:p-8 lg:p-12">
+      <div className="flex items-center justify-center p-4 sm:p-8 lg:p-12 relative">
         <div className="mx-auto grid w-[380px] gap-6">
             <div className="absolute top-8 left-8">
                 <Logo />

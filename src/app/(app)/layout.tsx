@@ -1,3 +1,4 @@
+
 'use client';
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -30,9 +31,26 @@ function AppLayoutSkeleton() {
             </div>
             <div className="flex flex-col">
                 <header className="flex h-14 items-center gap-4 border-b bg-muted/10 px-4 lg:h-[60px] lg:px-6">
-                    <Skeleton className="h-8 w-8 rounded-md md:hidden" />
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="shrink-0 md:hidden"
+                            >
+                                <Menu className="h-5 w-5" />
+                                <span className="sr-only">Toggle navigation menu</span>
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="flex flex-col p-0">
+                            <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+                                <Logo />
+                            </div>
+                            <AppNav isMobile />
+                        </SheetContent>
+                    </Sheet>
                     <div className="w-full flex-1" />
-                    <Skeleton className="h-8 w-8 rounded-full" />
+                    <UserNav />
                 </header>
                 <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
                     <Skeleton className="h-8 w-1/4" />

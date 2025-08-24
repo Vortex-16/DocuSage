@@ -42,8 +42,8 @@ export function SignupForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <div className="w-full max-w-md">
+      <CardHeader className="text-center">
         <CardTitle className="text-2xl">Create an account</CardTitle>
         <CardDescription>
           Enter your information to create an account.
@@ -103,6 +103,6 @@ export function SignupForm() {
           </Link>
         </div>
       </CardContent>
-    </Card>
+    </div>
   );
 }

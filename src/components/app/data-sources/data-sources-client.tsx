@@ -37,6 +37,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { indexTeamDocuments } from '@/ai/flows/index-team-documents';
+import { cn } from '@/lib/utils';
 
 type DataSource = {
   id: string;
@@ -143,7 +144,7 @@ export function DataSourcesClient() {
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select a document source" />
-                                                </SelectTrigger>
+                                                </Trigger>
                                             </FormControl>
                                             <SelectContent>
                                                 <SelectItem value="Notion">Notion</SelectItem>
@@ -212,7 +213,7 @@ export function DataSourcesClient() {
                 <TableCell className="font-medium">{ds.source}</TableCell>
                 <TableCell>{ds.name}</TableCell>
                 <TableCell>
-                  <Badge variant={ds.status === 'Connected' ? 'default' : 'destructive'} className={ds.status === 'Connected' ? 'bg-green-600/80 hover:bg-green-600/90' : ''}>
+                  <Badge variant={ds.status === 'Connected' ? 'default' : 'destructive'} className={cn(ds.status === 'Connected' && 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200/80 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800')}>
                     {ds.status === 'Connected' ? <CheckCircle className="h-3 w-3 mr-1.5"/> : <AlertCircle className="h-3 w-3 mr-1.5"/>}
                     {ds.status}
                   </Badge>

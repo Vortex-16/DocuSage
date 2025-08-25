@@ -118,7 +118,7 @@ export function DataSourcesClient() {
   }
 
   return (
-do  <Card data-test="card">
+    <Card data-test="card">
       <CardHeader>
         <div className="flex justify-between items-start">
             <div>

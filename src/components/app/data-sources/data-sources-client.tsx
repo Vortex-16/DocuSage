@@ -68,7 +68,7 @@ export function DataSourcesClient() {
     setIsLoading(true);
     // In a real app this would be an API call, here we're reading from our mock DB
     const sources = await getAllDocuments();
-    setDataSources(sources.map(s => ({...s, status: 'Connected'})));
+    setDataSources(sources.map(s => ({ ...s, status: 'Connected' })));
     setIsLoading(false);
   };
 
@@ -97,10 +97,10 @@ export function DataSourcesClient() {
         await fetchSources(); // Re-fetch to show the new source
         setIsDialogOpen(false);
         form.reset({
-            apiKey: 'DUMMY_API_KEY',
-            documentName: '',
-            documentContent: '',
-            documentSource: values.documentSource,
+          apiKey: 'DUMMY_API_KEY',
+          documentName: '',
+          documentContent: '',
+          documentSource: values.documentSource,
         });
       } else {
         throw new Error('Indexing failed');
@@ -121,102 +121,103 @@ export function DataSourcesClient() {
     <Card data-test="card">
       <CardHeader>
         <div className="flex justify-between items-start">
-            <div>
-                <CardTitle>Data Sources</CardTitle>
-                <CardDescription>
-                    Manage and index your team's documents from various sources.
-                </CardDescription>
-            </div>
-             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                    <Button size="sm" className="ml-auto gap-1">
-                        <PlusCircle className="h-3.5 w-3.5" />
-                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                            Add Source
-                        </span>
+          <div>
+            <CardTitle>Data Sources</CardTitle>
+            <CardDescription>
+              Manage and index your team's documents from various sources.
+            </CardDescription>
+          </div>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" className="ml-auto gap-1">
+                <PlusCircle className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  Add Source
+                </span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>Add New Data Source</DialogTitle>
+                <DialogDescription>Connect a new source to start indexing documents.</DialogDescription>
+              </DialogHeader>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="documentSource"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Source</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a document source" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Notion">Notion</SelectItem>
+                            <SelectItem value="Google Docs">Google Docs</SelectItem>
+                            <SelectItem value="Confluence">Confluence</SelectItem>
+                          </SelectContent>
+                        </Select>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="apiKey"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>API Key (Simulated)</FormLabel>
+                        <FormControl>
+                          <Input type="password" placeholder="••••••••••••••••••••" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="documentName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Document Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., Q4 Marketing Plan" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="documentContent"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Document Content</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="Paste the full text content of the document here..." className="min-h-[150px]" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline" type="button">Cancel</Button>
+                    </DialogClose>
+                    <Button type="submit" disabled={isIndexing}>
+                      {isIndexing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                      Start Indexing
                     </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px]">
-                    <DialogHeader>
-                        <DialogTitle>Add New Data Source</DialogTitle>
-                        <DialogDescription>Connect a new source to start indexing documents.</DialogDescription>
-                    </DialogHeader>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                            <FormField
-                                control={form.control}
-                                name="documentSource"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Source</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select a document source" />
-                                                </Trigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="Notion">Notion</SelectItem>
-                                                <SelectItem value="Google Docs">Google Docs</SelectItem>
-                                                <SelectItem value="Confluence">Confluence</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                             <FormField
-                                control={form.control}
-                                name="apiKey"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>API Key (Simulated)</FormLabel>
-                                        <FormControl>
-                                            <Input type="password" placeholder="••••••••••••••••••••" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="documentName"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Document Name</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="e.g., Q4 Marketing Plan" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                             <FormField
-                                control={form.control}
-                                name="documentContent"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Document Content</FormLabel>
-                                        <FormControl>
-                                            <Textarea placeholder="Paste the full text content of the document here..." className="min-h-[150px]" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <DialogFooter>
-                                <DialogClose asChild>
-                                    <Button variant="outline" type="button">Cancel</Button>
-                                </DialogClose>
-                                <Button type="submit" disabled={isIndexing}>
-                                    {isIndexing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-                                    Start Indexing
-                                </Button>
-                            </DialogFooter>
-                        </form>
-                    </Form>
-                </DialogContent>
-            </Dialog>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
         </div>
       </CardHeader>
       <CardContent>
@@ -231,35 +232,35 @@ export function DataSourcesClient() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-                 <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center">
-                        <LoaderCircle className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
-                    </TableCell>
-                </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} className="h-24 text-center">
+                  <LoaderCircle className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
+                </TableCell>
+              </TableRow>
             ) : dataSources.length > 0 ? (
-                dataSources.map((ds) => (
+              dataSources.map((ds) => (
                 <TableRow key={ds.id}>
-                    <TableCell className="font-medium">{ds.source}</TableCell>
-                    <TableCell>{ds.name}</TableCell>
-                    <TableCell>
+                  <TableCell className="font-medium">{ds.source}</TableCell>
+                  <TableCell>{ds.name}</TableCell>
+                  <TableCell>
                     <Badge variant={ds.status === 'Connected' ? 'default' : 'destructive'} className={cn(ds.status === 'Connected' && 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200/80 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800')}>
-                        {ds.status === 'Connected' ? <CheckCircle className="h-3 w-3 mr-1.5"/> : <AlertCircle className="h-3 w-3 mr-1.5"/>}
-                        {ds.status}
+                      {ds.status === 'Connected' ? <CheckCircle className="h-3 w-3 mr-1.5" /> : <AlertCircle className="h-3 w-3 mr-1.5" />}
+                      {ds.status}
                     </Badge>
-                    </TableCell>
-                    <TableCell>{new Date(ds.lastIndexed).toLocaleString()}</TableCell>
+                  </TableCell>
+                  <TableCell>{new Date(ds.lastIndexed).toLocaleString()}</TableCell>
                 </TableRow>
-                ))
+              ))
             ) : (
-                <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center">
-                       <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                            <Inbox className="h-8 w-8" />
-                            <p className="font-medium">No data sources found</p>
-                            <p className="text-sm">Click "Add Source" to start indexing documents.</p>
-                       </div>
-                    </TableCell>
-                </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} className="h-24 text-center">
+                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                    <Inbox className="h-8 w-8" />
+                    <p className="font-medium">No data sources found</p>
+                    <p className="text-sm">Click "Add Source" to start indexing documents.</p>
+                  </div>
+                </TableCell>
+              </TableRow>
             )}
           </TableBody>
         </Table>

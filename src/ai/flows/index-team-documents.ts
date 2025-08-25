@@ -10,19 +10,22 @@
  * const result = await indexTeamDocuments({
  *   documentSource: 'Notion',
  *   apiKey: 'your_notion_api_key',
- *   databaseId: 'your_notion_database_id',
+ *   documentContent: 'The content of the document to index.',
+ *   documentName: 'Document Name'
  * });
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { addDocument } from '@/ai/knowledge-base';
 
 const IndexTeamDocumentsInputSchema = z.object({
   documentSource: z
     .string()
     .describe('The source of the document. Can be Notion, Google Docs, or Confluence.'),
-  apiKey: z.string().describe('The API key for accessing the document source.'),
-  databaseId: z.string().describe('The ID of the database or document collection.'),
+  apiKey: z.string().describe('The API key for accessing the document source. (Simulated)'),
+  documentName: z.string().describe('The name or title of the document.'),
+  documentContent: z.string().describe('The text content of the document to index.'),
 });
 export type IndexTeamDocumentsInput = z.infer<typeof IndexTeamDocumentsInputSchema>;
 
@@ -42,11 +45,19 @@ const indexTeamDocumentsFlow = ai.defineFlow(
     outputSchema: IndexTeamDocumentsOutputSchema,
   },
   async input => {
-    // TODO: Implement the logic to index documents from various sources.
-    // This is a placeholder implementation.
-    console.log(`Indexing documents from ${input.documentSource} with API key ${input.apiKey} and database ID ${input.databaseId}`);
-    return {
-      success: true,
-    };
+    console.log(`Indexing document "${input.documentName}" from ${input.documentSource}.`);
+
+    try {
+      await addDocument({
+        source: input.documentSource as any,
+        name: input.documentName,
+        content: input.documentContent,
+        lastIndexed: new Date().toISOString(),
+      });
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to index document:", error);
+      return { success: false };
+    }
   }
 );

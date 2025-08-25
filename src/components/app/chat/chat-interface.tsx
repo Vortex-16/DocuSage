@@ -36,12 +36,10 @@ export function ChatInterface() {
         const userMessage: Message = { id: Date.now().toString(), type: 'user', content: question };
         setMessages(prev => [...prev, userMessage]);
         setIsLoading(true);
+        setInput('');
 
         try {
-            // A real app would have a retrieval step here to find relevant context
-            const context = "Our refund policy allows for full refunds within 30 days of purchase. To request design assets, please file a ticket in Jira under the 'DESIGN' project.";
-            
-            const result = await answerQuestion({ question, context });
+            const result = await answerQuestion({ question });
             
             const botMessage: Message = {
                 id: (Date.now() + 1).toString(),
@@ -66,7 +64,6 @@ export function ChatInterface() {
             })
         } finally {
             setIsLoading(false);
-            setInput('');
         }
     };
 

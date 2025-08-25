@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PlusCircle, LoaderCircle, CheckCircle, AlertCircle } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -34,10 +34,12 @@ import {
 } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { indexTeamDocuments } from '@/ai/flows/index-team-documents';
 import { cn } from '@/lib/utils';
+import { getAllDocuments } from '@/ai/knowledge-base';
 
 type DataSource = {
   id: string;
@@ -47,29 +49,35 @@ type DataSource = {
   lastIndexed: string;
 };
 
-const initialDataSources: DataSource[] = [
-  { id: '1', source: 'Notion', name: 'Engineering Wiki', status: 'Connected', lastIndexed: '2 hours ago' },
-  { id: '2', source: 'Google Docs', name: 'Marketing Plans', status: 'Connected', lastIndexed: '1 day ago' },
-  { id: '3', source: 'Confluence', name: 'HR Policies', status: 'Error', lastIndexed: '3 days ago' },
-];
-
 const formSchema = z.object({
   documentSource: z.string({ required_error: 'Please select a source.' }),
   apiKey: z.string().min(1, 'API Key is required.'),
-  databaseId: z.string().min(1, 'Database ID is required.'),
+  documentName: z.string().min(1, 'Document name is required.'),
+  documentContent: z.string().min(1, 'Document content is required.'),
 });
 
 export function DataSourcesClient() {
-  const [dataSources, setDataSources] = useState<DataSource[]>(initialDataSources);
+  const [dataSources, setDataSources] = useState<DataSource[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isIndexing, setIsIndexing] = useState(false);
   const { toast } = useToast();
 
+  const fetchSources = async () => {
+    // In a real app this would be an API call, here we're reading from our mock DB
+    const sources = await getAllDocuments();
+    setDataSources(sources.map(s => ({...s, status: 'Connected'})));
+  };
+
+  useEffect(() => {
+    fetchSources();
+  }, []);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      apiKey: '',
-      databaseId: '',
+      apiKey: 'DUMMY_API_KEY',
+      documentName: '',
+      documentContent: '',
     },
   });
 
@@ -82,17 +90,14 @@ export function DataSourcesClient() {
           title: 'Success',
           description: `Successfully started indexing for ${values.documentSource}.`,
         });
-        // In a real app, you'd probably poll for status or use websockets
-        const newSource: DataSource = {
-            id: Date.now().toString(),
-            source: values.documentSource as any,
-            name: `${values.documentSource} Source`,
-            status: 'Connected',
-            lastIndexed: 'Just now'
-        };
-        setDataSources(prev => [...prev, newSource]);
+        await fetchSources(); // Re-fetch to show the new source
         setIsDialogOpen(false);
-        form.reset();
+        form.reset({
+            apiKey: 'DUMMY_API_KEY',
+            documentName: '',
+            documentContent: '',
+            documentSource: values.documentSource,
+        });
       } else {
         throw new Error('Indexing failed');
       }
@@ -127,7 +132,7 @@ export function DataSourcesClient() {
                         </span>
                     </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="sm:max-w-[600px]">
                     <DialogHeader>
                         <DialogTitle>Add New Data Source</DialogTitle>
                         <DialogDescription>Connect a new source to start indexing documents.</DialogDescription>
@@ -161,7 +166,7 @@ export function DataSourcesClient() {
                                 name="apiKey"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>API Key</FormLabel>
+                                        <FormLabel>API Key (Simulated)</FormLabel>
                                         <FormControl>
                                             <Input type="password" placeholder="••••••••••••••••••••" {...field} />
                                         </FormControl>
@@ -171,12 +176,25 @@ export function DataSourcesClient() {
                             />
                             <FormField
                                 control={form.control}
-                                name="databaseId"
+                                name="documentName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Database ID</FormLabel>
+                                        <FormLabel>Document Name</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="e.g., a0b1c2d3e4f5..." {...field} />
+                                            <Input placeholder="e.g., Engineering Wiki" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                             <FormField
+                                control={form.control}
+                                name="documentContent"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Document Content</FormLabel>
+                                        <FormControl>
+                                            <Textarea placeholder="Paste the full text content of the document here..." className="min-h-[150px]" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -218,7 +236,7 @@ export function DataSourcesClient() {
                     {ds.status}
                   </Badge>
                 </TableCell>
-                <TableCell>{ds.lastIndexed}</TableCell>
+                <TableCell>{new Date(ds.lastIndexed).toLocaleString()}</TableCell>
               </TableRow>
             ))}
           </TableBody>

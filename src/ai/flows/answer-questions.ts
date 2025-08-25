@@ -11,10 +11,10 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { getAllDocuments } from '@/ai/knowledge-base';
 
 const AnswerQuestionInputSchema = z.object({
   question: z.string().describe('The question to answer.'),
-  context: z.string().describe('The relevant documents from the knowledge base.'),
 });
 export type AnswerQuestionInput = z.infer<typeof AnswerQuestionInputSchema>;
 
@@ -25,20 +25,23 @@ const AnswerQuestionOutputSchema = z.object({
 export type AnswerQuestionOutput = z.infer<typeof AnswerQuestionOutputSchema>;
 
 export async function answerQuestion(input: AnswerQuestionInput): Promise<AnswerQuestionOutput> {
-  return answerQuestionFlow(input);
+  const documents = await getAllDocuments();
+  const context = documents.map(doc => `Source: ${doc.source} - ${doc.name}\nContent: ${doc.content}`).join('\n\n');
+  
+  return answerQuestionFlow({ ...input, context });
 }
 
 const prompt = ai.definePrompt({
   name: 'answerQuestionPrompt',
-  input: {schema: AnswerQuestionInputSchema},
+  input: {schema: z.object({ question: z.string(), context: z.string() })},
   output: {schema: AnswerQuestionOutputSchema},
   prompt: `You are an AI assistant answering questions about internal company documents.
 
-  You are given a question and a set of relevant documents.
+  You are given a question and a set of relevant documents from the knowledge base.
 
-  Answer the question using the information in the documents.
+  Answer the question using ONLY the information in the documents provided.
 
-  Cite the sources used to answer the question.
+  Cite the sources used to answer the question. If the document content does not contain the answer, say that you could not find an answer in the knowledge base.
 
   Question: {{{question}}}
 
@@ -48,7 +51,7 @@ const prompt = ai.definePrompt({
 const answerQuestionFlow = ai.defineFlow(
   {
     name: 'answerQuestionFlow',
-    inputSchema: AnswerQuestionInputSchema,
+    inputSchema: z.object({ question: z.string(), context: z.string() }),
     outputSchema: AnswerQuestionOutputSchema,
   },
   async input => {

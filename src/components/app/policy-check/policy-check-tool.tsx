@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { LoaderCircle, AlertTriangle, CheckCircle2, Wand2 } from 'lucide-react';
+import { LoaderCircle, AlertTriangle, CheckCircle2, Wand2, FileText } from 'lucide-react';
 import { detectPolicyViolations, DetectPolicyViolationsOutput } from '@/ai/flows/detect-policy-violations';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -79,7 +79,7 @@ export function PolicyCheckTool() {
                         The results of the policy check will appear here.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="flex-1 flex items-center justify-center">
+                <CardContent className="flex-1 flex items-center justify-center p-6">
                     {isLoading ? (
                         <div className="flex flex-col items-center gap-2 text-muted-foreground">
                             <LoaderCircle className="h-8 w-8 animate-spin" />
@@ -91,11 +91,11 @@ export function PolicyCheckTool() {
                                 result.needsUpdate ? "border-amber-500/50 bg-amber-500/10" : "border-green-500/50 bg-green-500/10"
                             )}>
                                 {result.needsUpdate ? (
-                                    <AlertTriangle className="h-5 w-5 mt-1 text-amber-500" />
+                                    <AlertTriangle className="h-5 w-5 mt-1 flex-shrink-0 text-amber-500" />
                                 ) : (
-                                    <CheckCircle2 className="h-5 w-5 mt-1 text-green-500" />
+                                    <CheckCircle2 className="h-5 w-5 mt-1 flex-shrink-0 text-green-500" />
                                 )}
-                                <div>
+                                <div className="flex-grow">
                                     <h3 className={cn("font-semibold", result.needsUpdate ? "text-amber-600" : "text-green-600")}>
                                         {result.needsUpdate ? "Updates Required" : "Policy Compliant"}
                                     </h3>
@@ -103,7 +103,7 @@ export function PolicyCheckTool() {
                                 </div>
                             </div>
                             
-                            {result.needsUpdate && (
+                            {result.needsUpdate && result.summary && (
                                 <>
                                 <Separator />
                                 <div className="space-y-2">
@@ -114,8 +114,10 @@ export function PolicyCheckTool() {
                             )}
                         </div>
                     ) : (
-                        <div className="text-center text-muted-foreground">
-                            <p>No analysis has been performed yet.</p>
+                        <div className="text-center text-muted-foreground p-8">
+                             <FileText className="mx-auto h-12 w-12" />
+                            <h3 className="mt-4 text-lg font-medium">No analysis performed</h3>
+                            <p className="mt-1 text-sm">Paste a document and click "Check Policy" to see the results.</p>
                         </div>
                     )}
                 </CardContent>

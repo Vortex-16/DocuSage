@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { PlusCircle, LoaderCircle, CheckCircle, AlertCircle } from 'lucide-react';
+import { PlusCircle, LoaderCircle, CheckCircle, AlertCircle, Inbox } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -58,14 +58,17 @@ const formSchema = z.object({
 
 export function DataSourcesClient() {
   const [dataSources, setDataSources] = useState<DataSource[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isIndexing, setIsIndexing] = useState(false);
   const { toast } = useToast();
 
   const fetchSources = async () => {
+    setIsLoading(true);
     // In a real app this would be an API call, here we're reading from our mock DB
     const sources = await getAllDocuments();
     setDataSources(sources.map(s => ({...s, status: 'Connected'})));
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -75,7 +78,7 @@ export function DataSourcesClient() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      apiKey: 'DUMMY_API_KEY',
+      apiKey: 'DUMMY_API_KEY', // This is simulated
       documentName: '',
       documentContent: '',
     },
@@ -88,7 +91,7 @@ export function DataSourcesClient() {
       if (result.success) {
         toast({
           title: 'Success',
-          description: `Successfully started indexing for ${values.documentSource}.`,
+          description: `Successfully indexed "${values.documentName}".`,
         });
         await fetchSources(); // Re-fetch to show the new source
         setIsDialogOpen(false);
@@ -106,7 +109,7 @@ export function DataSourcesClient() {
       toast({
         variant: 'destructive',
         title: 'Indexing Failed',
-        description: 'Could not start indexing process. Please check your credentials.',
+        description: 'Could not index the document. Please try again.',
       });
     } finally {
       setIsIndexing(false);
@@ -181,7 +184,7 @@ export function DataSourcesClient() {
                                     <FormItem>
                                         <FormLabel>Document Name</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="e.g., Engineering Wiki" {...field} />
+                                            <Input placeholder="e.g., Q4 Marketing Plan" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -226,19 +229,37 @@ export function DataSourcesClient() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {dataSources.map((ds) => (
-              <TableRow key={ds.id}>
-                <TableCell className="font-medium">{ds.source}</TableCell>
-                <TableCell>{ds.name}</TableCell>
-                <TableCell>
-                  <Badge variant={ds.status === 'Connected' ? 'default' : 'destructive'} className={cn(ds.status === 'Connected' && 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200/80 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800')}>
-                    {ds.status === 'Connected' ? <CheckCircle className="h-3 w-3 mr-1.5"/> : <AlertCircle className="h-3 w-3 mr-1.5"/>}
-                    {ds.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>{new Date(ds.lastIndexed).toLocaleString()}</TableCell>
-              </TableRow>
-            ))}
+            {isLoading ? (
+                 <TableRow>
+                    <TableCell colSpan={4} className="h-24 text-center">
+                        <LoaderCircle className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
+                    </TableCell>
+                </TableRow>
+            ) : dataSources.length > 0 ? (
+                dataSources.map((ds) => (
+                <TableRow key={ds.id}>
+                    <TableCell className="font-medium">{ds.source}</TableCell>
+                    <TableCell>{ds.name}</TableCell>
+                    <TableCell>
+                    <Badge variant={ds.status === 'Connected' ? 'default' : 'destructive'} className={cn(ds.status === 'Connected' && 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200/80 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800')}>
+                        {ds.status === 'Connected' ? <CheckCircle className="h-3 w-3 mr-1.5"/> : <AlertCircle className="h-3 w-3 mr-1.5"/>}
+                        {ds.status}
+                    </Badge>
+                    </TableCell>
+                    <TableCell>{new Date(ds.lastIndexed).toLocaleString()}</TableCell>
+                </TableRow>
+                ))
+            ) : (
+                <TableRow>
+                    <TableCell colSpan={4} className="h-24 text-center">
+                       <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                            <Inbox className="h-8 w-8" />
+                            <p className="font-medium">No data sources found</p>
+                            <p className="text-sm">Click "Add Source" to start indexing documents.</p>
+                       </div>
+                    </TableCell>
+                </TableRow>
+            )}
           </TableBody>
         </Table>
       </CardContent>

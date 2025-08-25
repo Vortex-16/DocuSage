@@ -2,7 +2,7 @@
 'use client';
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Menu } from 'lucide-react';
+import { Menu, MessageSquare, ShieldCheck, Database } from 'lucide-react';
 
 import { useAuth } from '@/providers/auth-provider';
 import { AppNav } from '@/components/app/app-nav';
@@ -22,38 +22,32 @@ function AppLayoutSkeleton() {
                     </div>
                     <div className="flex-1 p-4">
                         <div className="flex flex-col gap-4">
-                            <Skeleton className="h-8 w-full" />
-                            <Skeleton className="h-8 w-full" />
-                            <Skeleton className="h-8 w-full" />
+                            <div className="flex items-center gap-3 rounded-lg px-3 py-2">
+                                <Skeleton className="h-4 w-4" />
+                                <Skeleton className="h-4 w-[100px]" />
+                            </div>
+                            <div className="flex items-center gap-3 rounded-lg px-3 py-2">
+                                <Skeleton className="h-4 w-4" />
+                                <Skeleton className="h-4 w-[120px]" />
+                            </div>
+                            <div className="flex items-center gap-3 rounded-lg px-3 py-2">
+                                <Skeleton className="h-4 w-4" />
+                                <Skeleton className="h-4 w-[80px]" />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div className="flex flex-col">
                 <header className="flex h-14 items-center gap-4 border-b bg-muted/10 px-4 lg:h-[60px] lg:px-6">
-                    <Sheet>
-                        <SheetTrigger asChild>
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="shrink-0 md:hidden"
-                            >
-                                <Menu className="h-5 w-5" />
-                                <span className="sr-only">Toggle navigation menu</span>
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent side="left" className="flex flex-col p-0">
-                            <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-                                <Logo />
-                            </div>
-                            <AppNav isMobile />
-                        </SheetContent>
-                    </Sheet>
+                    <div className="md:hidden">
+                        <Skeleton className="h-8 w-8" />
+                    </div>
                     <div className="w-full flex-1" />
-                    <UserNav />
+                    <Skeleton className="h-8 w-8 rounded-full" />
                 </header>
                 <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-                    <Skeleton className="h-8 w-1/4" />
+                    <Skeleton className="h-6 w-1/4" />
                     <Skeleton className="h-[calc(100vh-10rem)] w-full" />
                 </main>
             </div>
@@ -101,7 +95,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                                 <span className="sr-only">Toggle navigation menu</span>
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="left" className="flex flex-col p-0">
+                        <SheetContent side="left" className="flex flex-col p-0 w-[280px]">
                             <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
                                 <Logo />
                             </div>

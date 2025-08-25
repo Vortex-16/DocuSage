@@ -20,12 +20,18 @@ export type AnswerQuestionInput = z.infer<typeof AnswerQuestionInputSchema>;
 
 const AnswerQuestionOutputSchema = z.object({
   answer: z.string().describe('The answer to the question.'),
-  sources: z.array(z.string()).describe('The sources used to answer the question.'),
+  sources: z.array(z.string()).describe('The sources used to answer the question. Provide the document name as the source.'),
 });
 export type AnswerQuestionOutput = z.infer<typeof AnswerQuestionOutputSchema>;
 
 export async function answerQuestion(input: AnswerQuestionInput): Promise<AnswerQuestionOutput> {
   const documents = await getAllDocuments();
+  if (documents.length === 0) {
+    return {
+        answer: "I couldn't find any documents in the knowledge base. Please add a data source first.",
+        sources: []
+    }
+  }
   const context = documents.map(doc => `Source: ${doc.source} - ${doc.name}\nContent: ${doc.content}`).join('\n\n');
   
   return answerQuestionFlow({ ...input, context });
@@ -35,17 +41,20 @@ const prompt = ai.definePrompt({
   name: 'answerQuestionPrompt',
   input: {schema: z.object({ question: z.string(), context: z.string() })},
   output: {schema: AnswerQuestionOutputSchema},
-  prompt: `You are an AI assistant answering questions about internal company documents.
+  prompt: `You are an AI assistant for "DocuSage", designed to answer questions about internal company documents.
 
-  You are given a question and a set of relevant documents from the knowledge base.
+You will be given a user's question and a set of internal documents as context. Your task is to provide a clear and concise answer to the question based ONLY on the information present in the provided documents.
 
-  Answer the question using ONLY the information in the documents provided.
+Carefully analyze the documents and the question. Synthesize the relevant information to formulate your answer.
 
-  Cite the sources used to answer the question. If the document content does not contain the answer, say that you could not find an answer in the knowledge base.
+When you provide an answer, you MUST cite the specific document names you used to formulate your response. List these under the 'sources' field.
 
-  Question: {{{question}}}
+If the information required to answer the question is not available in the provided documents, you MUST explicitly state that you could not find an answer in the knowledge base. Do not try to make up an answer.
 
-  Documents: {{{context}}}`,
+Question: {{{question}}}
+
+Documents:
+{{{context}}}`,
 });
 
 const answerQuestionFlow = ai.defineFlow(

@@ -1,3 +1,4 @@
+// This is a client component
 'use client';
 import { useState, useEffect } from 'react';
 import { PlusCircle, LoaderCircle, CheckCircle, AlertCircle, Inbox } from 'lucide-react';

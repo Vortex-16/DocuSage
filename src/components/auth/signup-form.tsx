@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/providers/auth-provider';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Name is required.' }),
@@ -42,14 +42,14 @@ export function SignupForm() {
   }
 
   return (
-    <div className="w-full max-w-md">
-      <CardHeader className="text-center">
+    <>
+      <CardHeader className="text-center p-0 mb-6">
         <CardTitle className="text-2xl">Create an account</CardTitle>
         <CardDescription>
           Enter your information to create an account.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
              <FormField
@@ -103,6 +103,6 @@ export function SignupForm() {
           </Link>
         </div>
       </CardContent>
-    </div>
+    </>
   );
 }

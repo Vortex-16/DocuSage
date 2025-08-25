@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/providers/auth-provider';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -40,14 +40,14 @@ export function LoginForm() {
   }
 
   return (
-    <div className="w-full max-w-md">
-      <CardHeader className="text-center">
+    <>
+      <CardHeader className="text-center p-0 mb-6">
         <CardTitle className="text-2xl">Welcome back</CardTitle>
         <CardDescription>
           Enter your email below to log in to your account.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -88,6 +88,6 @@ export function LoginForm() {
           </Link>
         </div>
       </CardContent>
-    </div>
+    </>
   );
 }

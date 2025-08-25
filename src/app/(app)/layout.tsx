@@ -2,7 +2,7 @@
 'use client';
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Menu, MessageSquare, ShieldCheck, Database } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 import { useAuth } from '@/providers/auth-provider';
 import { AppNav } from '@/components/app/app-nav';
